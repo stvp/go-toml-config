@@ -1,13 +1,15 @@
 go-toml-config
 ==============
 
+[![Build Status](https://travis-ci.org/stvp/go-toml-config.png?branch=master)](https://travis-ci.org/stvp/go-toml-config)
+
 go-toml-config is a simple [TOML](https://github.com/mojombo/toml)-based
 configuration package for Golang apps that allows you to easily load
 configuration files and set defaults. It's a simple wrapper around
 [`flag.FlagSet`](http://golang.org/pkg/flag/), so you can use it in pretty much
 the same exact way.
 
-[![Build Status](https://travis-ci.org/stvp/go-toml-config.png?branch=master)](https://travis-ci.org/stvp/go-toml-config) • [API documentation](http://godoc.org/github.com/stvp/go-toml-config)
+[API documentation](http://godoc.org/github.com/stvp/go-toml-config)
 
 Example
 --------
