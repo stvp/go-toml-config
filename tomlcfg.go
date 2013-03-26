@@ -17,7 +17,7 @@
 
 	Define your config variables and give them defaults:
 
-		import config "github.com/stvp/tomlcfg"
+		import "github.com/stvp/go-toml-config"
 
 		var (
 			country            = config.String("country", "Unknown")
@@ -36,6 +36,9 @@
 	You can also create separate ConfigSets for different config files:
 
 		networkConfig = config.NewConfigSet("network settings", config.ExitOnError)
+		networkConfig.String("host", "localhost")
+		networkConfig.Int("port", 8080)
+		networkConfig.Parse("/path/to/network.conf")
 */
 package config
 
@@ -43,7 +46,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	toml "github.com/pelletier/go-toml"
+	"github.com/pelletier/go-toml"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -227,6 +230,9 @@ func Duration(name string, value time.Duration) *time.Duration {
 	return globalConfig.Duration(name, value)
 }
 
+// Parse takes a path to a TOML file and loads it into the global ConfigSet.
+// This must be called after all config flags have been defined but before the
+// flags are accessed by the program.
 func Parse(path string) error {
 	return globalConfig.Parse(path)
 }
