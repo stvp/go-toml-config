@@ -46,8 +46,11 @@ import (
 	toml "github.com/pelletier/go-toml"
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 )
+
+// -- ConfigSet
 
 type ConfigSet struct {
 	*flag.FlagSet
@@ -107,21 +110,42 @@ func (c *ConfigSet) Duration(name string, value time.Duration) *time.Duration {
 func (c *ConfigSet) Parse(path string) error {
 	configBytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		errorString := fmt.Sprintf("Error loading %s: %s", path, err.Error())
-		return errors.New(errorString)
+		return err
 	}
 
 	tomlTree, err := toml.Load(string(configBytes))
 	if err != nil {
-		errorString := fmt.Sprintf("Error parsing config: %s", err.Error())
+		errorString := fmt.Sprintf("%s is not a valid TOML file. See https://github.com/mojombo/toml for syntax help.", path)
 		return errors.New(errorString)
 	}
 
-	// TODO: need to get *all* keys "section.name" etc.
-	for _, key := range tomlTree.Keys() {
-		c.Set(key, fmt.Sprintf("%v", tomlTree.Get(key)))
+	err = c.loadTomlTree(tomlTree, []string{})
+	if err != nil {
+		return err
 	}
 
+	return nil
+}
+
+// loadTomlTree recursively loads a TomlTree into this ConfigSet's config
+// variables.
+func (c *ConfigSet) loadTomlTree(tree *toml.TomlTree, path []string) error {
+	for _, key := range tree.Keys() {
+		fullPath := append(path, key)
+		value := tree.Get(key)
+		if subtree, isTree := value.(*toml.TomlTree); isTree {
+			err := c.loadTomlTree(subtree, fullPath)
+			if err != nil {
+				return err
+			}
+		} else {
+			fullPath := strings.Join(append(path, key), ".")
+			err := c.Set(fullPath, fmt.Sprintf("%v", value))
+			if err != nil {
+				return nil
+			}
+		}
+	}
 	return nil
 }
 
