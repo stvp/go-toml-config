@@ -43,8 +43,12 @@ func testBadParse(t *testing.T, c *ConfigSet) {
 
 	// Type mismatch
 	c.Int("cool", 10)
+	c.Float64("neat.terrific", 10.1)
 	err = c.Parse(SIMPLE_CONFIG_PATH)
-	if err == nil || err.Error() != "The value for cool is invalid" {
+	if err == nil {
+		t.Error("Expected an error but didn't get one.")
+	}
+	if err.Error() != "The value for cool is invalid" && err.Error() != "neat.terrific.rad is not a valid config setting" {
 		t.Error(err)
 	}
 
