@@ -46,6 +46,7 @@ import (
 	toml "github.com/pelletier/go-toml"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -115,7 +116,7 @@ func (c *ConfigSet) Parse(path string) error {
 
 	tomlTree, err := toml.Load(string(configBytes))
 	if err != nil {
-		errorString := fmt.Sprintf("%s is not a valid TOML file. See https://github.com/mojombo/toml for syntax help.", path)
+		errorString := fmt.Sprintf("%s is not a valid TOML file. See https://github.com/mojombo/toml", path)
 		return errors.New(errorString)
 	}
 
@@ -142,11 +143,27 @@ func (c *ConfigSet) loadTomlTree(tree *toml.TomlTree, path []string) error {
 			fullPath := strings.Join(append(path, key), ".")
 			err := c.Set(fullPath, fmt.Sprintf("%v", value))
 			if err != nil {
-				return nil
+				return buildLoadError(fullPath, err)
 			}
 		}
 	}
 	return nil
+}
+
+// buildLoadError takes an error from flag.FlagSet#Set and makes it a bit more
+// readable, if it recognizes the format.
+func buildLoadError(path string, err error) error {
+	missingFlag := regexp.MustCompile(`^no such flag -([^\s]+)`)
+	invalidSyntax := regexp.MustCompile(`^.+ parsing "(.+)": invalid syntax$`)
+	errorString := err.Error()
+
+	if missingFlag.MatchString(errorString) {
+		errorString = missingFlag.ReplaceAllString(errorString, "$1 is not a valid config setting")
+	} else if invalidSyntax.MatchString(errorString) {
+		errorString = "The value for " + path + " is invalid"
+	}
+
+	return errors.New(errorString)
 }
 
 const (

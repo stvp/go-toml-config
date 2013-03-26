@@ -1,25 +1,57 @@
 package config
 
 import (
+	"errors"
 	"flag"
+	"strings"
 	"testing"
 )
 
 const (
 	GOOD_CONFIG_PATH    = "examples/good.conf"
+	SIMPLE_CONFIG_PATH  = "examples/simple.conf"
 	INVALID_CONFIG_PATH = "examples/invalid.conf"
 	MISSING_CONFIG_PATH = "examples/nope.conf"
 )
 
+func TestBuildLoadError(t *testing.T) {
+	testValues := map[string]string{
+		"strconv.ParseInt: parsing \"foo bar\": invalid syntax": "The value for foo.bar is invalid",
+		"no such flag -my_bool":                                 "my_bool is not a valid config setting",
+	}
+
+	for given, expected := range testValues {
+		err := errors.New(given)
+		if got := buildLoadError("foo.bar", err).Error(); got != expected {
+			t.Errorf("Error message should have been: %#v, but was: %#v", expected, got)
+		}
+	}
+}
+
 func testBadParse(t *testing.T, c *ConfigSet) {
+	// Missing path
 	err := c.Parse(MISSING_CONFIG_PATH)
 	if err == nil || err.Error() != "open examples/nope.conf: no such file or directory" {
 		t.Error("Expected error when loading missing TOML file, got", err)
 	}
 
+	// TOML syntax error
 	err = c.Parse(INVALID_CONFIG_PATH)
-	if err == nil || err.Error() != "examples/invalid.conf is not a valid TOML file. See https://github.com/mojombo/toml for syntax help." {
+	if err == nil || err.Error() != "examples/invalid.conf is not a valid TOML file. See https://github.com/mojombo/toml" {
 		t.Error("Expected error when loading missing TOML file, got", err)
+	}
+
+	// Type mismatch
+	c.Int("cool", 10)
+	err = c.Parse(SIMPLE_CONFIG_PATH)
+	if err == nil || err.Error() != "The value for cool is invalid" {
+		t.Error(err)
+	}
+
+	// Extraneous config vars
+	err = c.Parse(GOOD_CONFIG_PATH)
+	if err == nil || !strings.HasSuffix(err.Error(), " is not a valid config setting") {
+		t.Error(err)
 	}
 }
 
