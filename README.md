@@ -7,7 +7,7 @@ configuration files and set defaults. It's a simple wrapper around
 [`flag.FlagSet`](http://golang.org/pkg/flag/), so you can use it in pretty much
 the same exact way.
 
-[godoc.org API documentation](http://godoc.org/github.com/stvp/go-toml-config)
+[![Build Status](https://travis-ci.org/stvp/go-toml-config.png?branch=master)](https://travis-ci.org/stvp/go-toml-config) • [API documentation](http://godoc.org/github.com/stvp/go-toml-config)
 
 Example
 --------
