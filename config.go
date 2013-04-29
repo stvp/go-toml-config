@@ -23,7 +23,7 @@
 			country            = config.String("country", "Unknown")
 			atlantaEnabled     = config.Bool("atlanta.enabled", false)
 			alantaPopulation   = config.Int("atlanta.population", 0)
-			atlantaTemperature = config.Float("atlanta.population", 0)
+			atlantaTemperature = config.Float("atlanta.temperature", 0)
 		)
 
 	After all the config variables are defined, load the config file to overwrite
