@@ -46,12 +46,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/pelletier/go-toml"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/pelletier/go-toml"
 )
 
 // -- ConfigSet
@@ -153,7 +154,7 @@ func (c *ConfigSet) DurationVar(p *time.Duration, name string, value time.Durati
 // Duration defines a time.Duration config variable with a given name and
 // default value.
 func (c *ConfigSet) Duration(name string, value time.Duration) *time.Duration {
-	return globalConfig.FlagSet.Duration(name, value, "")
+	return c.FlagSet.Duration(name, value, "")
 }
 
 // Parse takes a path to a TOML file and loads it. This must be called after
