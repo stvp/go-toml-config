@@ -34,7 +34,7 @@ var (
   country            = config.String("country", "Unknown")
   atlantaEnabled     = config.Bool("atlanta.enabled", false)
   alantaPopulation   = config.Int("atlanta.population", 0)
-  atlantaTemperature = config.Float("atlanta.temperature", 0)
+  atlantaTemperature = config.Float64("atlanta.temperature", 0)
 )
 
 func main() {
