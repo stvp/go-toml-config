@@ -180,13 +180,13 @@ func (c *ConfigSet) Parse(path string) error {
 	return nil
 }
 
-// loadTomlTree recursively loads a TomlTree into this ConfigSet's config
+// loadTomlTree recursively loads a toml.Tree into this ConfigSet's config
 // variables.
-func (c *ConfigSet) loadTomlTree(tree *toml.TomlTree, path []string) error {
+func (c *ConfigSet) loadTomlTree(tree *toml.Tree, path []string) error {
 	for _, key := range tree.Keys() {
 		fullPath := append(path, key)
 		value := tree.Get(key)
-		if subtree, isTree := value.(*toml.TomlTree); isTree {
+		if subtree, isTree := value.(*toml.Tree); isTree {
 			err := c.loadTomlTree(subtree, fullPath)
 			if err != nil {
 				return err
