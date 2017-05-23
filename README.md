@@ -52,6 +52,19 @@ networkConfig.Int("port", 8080)
 networkConfig.Parse("/path/to/network.conf")
 ```
 
+Contributors
+------------
+
+Thanks all!
+
+* @tysonmote
+* @matrixik
+* @fwang2002
+* @shanks
+* @xboston
+* @tgulacsi
+
+
 License
 -------
 
